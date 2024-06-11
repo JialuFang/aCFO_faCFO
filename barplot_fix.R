@@ -2,16 +2,17 @@ library(ggplot2)
 library(cowplot)
 library(gridExtra)
 source("utilities.R")
-source("./setting/Sce_5dose_phi33.R")
+source("./setting/Sce_6dose_phi20.R")
 ndose <- length(p.trues[[1]])
 res.ls <- list()
 
 for (flag in 1:length(p.trues)){
   print(flag)
-  file.name <- paste0("./data_revision1/","TITE_MTDSimu_",ndose, "dose_phi_", target*100, "_fix_",  flag, ".Rdata")
+  file.name <- paste0("./rand_data/","rand_MTDSimu_",ndose, "dose_phi_", target*100, "_fix_",  flag, ".Rdata")
   load(file.name)
-  res.ls[[flag]] <-  post.process.random(results)[c("fcfo", "facfo", "titecfo", "titeacfo", "titecrm","titeboin", "benchacfo"), ]
+  #res.ls[[flag]] <-  post.process.random(results)[c("fcfo", "facfo", "titecfo", "titeacfo", "titecrm","titeboin", "benchacfo"), ]
   #res.ls[[flag]] <-  post.process.random(results)[c("cfo","acfo","crm","boin"), ]
+  res.ls[[flag]] <-  post.process.random(results)[c("cfo","randcfo"), ]
   print(res.ls[[flag]])
   flag <- flag + 1
 }
