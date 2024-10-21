@@ -1,6 +1,6 @@
 # scenarios from TITE-CRM original paper
 target <- 0.20
-ncohort <- 50
+ncohort <- 33
 cohortsize <- 3
 
 p.trues <- list()

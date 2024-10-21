@@ -4,14 +4,15 @@ source("utilities.R")
 
 nsimu <- 5000
 target <- 0.2
-ndose <- 7
+ndose <- 6
 res.ls <- list()
 flag <- 1
 for (diff in c(0.05, 0.07, 0.1, 0.15)){
-  file.name <- paste0("./data_revision1/","TITE_MTDSimu_",ndose, "dose_phi_", target*100, "_random_", 100*diff, ".Rdata")
+  file.name <- paste0("./test_data/","rand_MTDSimu_",ndose, "dose_phi_", target*100, "_random_", 100*diff, ".Rdata")
   load(file.name)
-  res.ls[[flag]] <-  post.process.random(results)[c("fcfo", "facfo", "titecfo", "titeacfo", "crm","boin", "benchacfo"), ]
+  #res.ls[[flag]] <-  post.process.random(results)[c("fcfo", "facfo", "titecfo", "titeacfo", "crm","boin", "benchacfo"), ]
   #res.ls[[flag]] <-  post.process.random(results)[c("cfo","acfo","crm","boin"), ]
+  res.ls[[flag]] <-  post.process.random(results)[c("cfo","randcfo"), ]
   print(res.ls[[flag]])
   flag <- flag + 1
 }

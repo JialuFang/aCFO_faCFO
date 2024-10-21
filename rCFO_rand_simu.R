@@ -6,7 +6,7 @@ if (!require(CFO, quietly = TRUE)) {
 library(CFO)
 library(parallel)
 source("utilities.R")
-source("./setting/Sce_6dose_phi20.R")
+source("./setting/Sce_6dose_phi20_L.R")
 
 CFO.rand.next <- function(target, cys, cns, currdose, prior.para=list(alp.prior=target, bet.prior=1-target),
                           cutoff.eli=0.95, early.stop=0.95){
@@ -423,48 +423,54 @@ run.fn <- function(i){
   if (i%%100 == 0){
     print(i)
   }
+  
+  p.true.all <- gen.rand.doses(ndose, target, mu1=mu, mu2=mu)
+  p.true <- p.true.all$p.true
+  tmtd <- p.true.all$mtd.level
+  
   randCFO <- CFO.rand.simu('CFO', target, p.true, init.level, ncohort, cohortsize, prior.para, 
-                          cutoff.eli=0.95, early.stop=0.95, seed = seeds[i])
+                           cutoff.eli=0.95, early.stop=0.95, seed = seeds[i])
   randCFO.res <- list(MTD=randCFO$MTD, dose.ns=randCFO$npatients, DLT.ns=randCFO$ntox, 
                       p.true=p.true, target=target, over.doses=randCFO$over.doses)
   CFO <- CFO.simu('CFO', target, p.true, init.level, ncohort, cohortsize, prior.para, 
-                       cutoff.eli=0.95, early.stop=0.95, seed = seeds[i])
+                  cutoff.eli=0.95, early.stop=0.95, seed = seeds[i])
   CFO.res <- list(MTD=CFO$MTD, dose.ns=CFO$npatients, DLT.ns=CFO$ntox, 
-                      p.true=p.true, target=target, over.doses=CFO$over.doses)
+                  p.true=p.true, target=target, over.doses=CFO$over.doses)
   ress <- list(
     cfo=CFO.res,
     randcfo=randCFO.res,
     paras=list(p.true=p.true, 
-                mtd=tmtd, 
-                prior.para=prior.para,
-                target=target,
-                ncohort=ncohort,
-                cohortsize=cohortsize)
+               mtd=tmtd, 
+               prior.para=prior.para,
+               target=target,
+               ncohort=ncohort,
+               cohortsize=cohortsize)
   )
   ress
 }
-  
-for (i in 1:length(p.trues)){
-  init.level <- 1
-  nsimu <- 5000
-  
+
+diff_list <- c(0.05, 0.07, 0.1, 0.15)
+mu_list <- c(0.344, 0.484, 0.637, 0.852)
+ndose <- length(p.trues[[1]])
+init.level <- 1
+
+for (i in 2:4){
+  mu <- mu_list[i]
+  diff <- diff_list[i]
   prior.para <- list(alp.prior=target, bet.prior=1-target)
   
-  idx <- i
-  p.true <- p.trues[[idx]]
-  ndose <- length(p.true)
-  tmtd <- MTD.level(target, p.true)
-  
+  nsimu <- 5000
   seeds <- 1:nsimu
+  
+  file.name <- paste0("./test_data/","rand_MTDSimu_",ndose, "dose_phi_", target*100, "_random_",  diff*100, "_S.Rdata")
   
   t <- system.time({
     results <- mclapply(1:nsimu, run.fn, mc.cores=40)
   })
   print(t)
-  file.name <- paste0("./test_data/","rand_MTDSimu_",ndose, "dose_phi_", target*100, "_fix_",  idx, "S.Rdata")
-  save(results, file=file.name)
   
   print(post.process.random(results))
+  save(results, file=file.name)
   
   cfo.ress <- lapply(1:nsimu, function(i)results[[i]]$cfo)
   randcfo.ress <- lapply(1:nsimu, function(i)results[[i]]$randcfo)
@@ -472,7 +478,5 @@ for (i in 1:length(p.trues)){
     CFO = phase1.post.fn(cfo.ress),
     randCFO = phase1.post.fn(randcfo.ress)
   )
-  print(tmtd)
   print(phase.I.pretty.tb(sum.all))
 }
-

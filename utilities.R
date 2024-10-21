@@ -275,7 +275,12 @@ post.process.onemethod <- function(res, paras){
   ndose <- length(paras$p.true)
   rv <- rep(0, 7)
   rv[1] <- sum(res$MTD==tmtd)
-  rv[2] <- res$dose.ns[tmtd]
+  if(tmtd != 99){
+    rv[2] <- res$dose.ns[tmtd]
+  }else{
+    rv[2] <- 0
+  }
+  
   if (res$MTD == 99){
     rv[3] <- 0
   }else{

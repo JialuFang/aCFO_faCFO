@@ -2,7 +2,7 @@ library(ggplot2)
 library(cowplot)
 library(gridExtra)
 source("utilities.R")
-source("./setting/Sce_6dose_phi20.R")
+source("./setting/Sce_7dose_phi20.R")
 ndose <- length(p.trues[[1]])
 res.ls <- list()
 
@@ -31,16 +31,17 @@ res.ls <- lapply(res.ls, function(df) {
 dim <- dim(res.ls[[1]])
 
 
-#title<- c("MTD selection", "MTD allocation", "Overdose selection", "Overdose allocation", "Average DLT rate")
-title<- c("MTD selection", "MTD allocation", "Overdose selection", "Overdose allocation", 
-          "Average DLT rate", "Average trial duration")
+title<- c("MTD selection", "MTD allocation", "Overdose selection", "Overdose allocation", "Average DLT rate")
+#title<- c("MTD selection", "MTD allocation", "Overdose selection", "Overdose allocation", 
+#          "Average DLT rate", "Average trial duration")
 
 
 plots_list <- list()
-for (i in 1:(length(title)-1)){
+for (i in 1:(length(title))){
   grp.names <- c(1:length(p.trues), 'avg')
+  m.names <-   c("CFO (long-term)", "rCFO (long-term)", "CFO (short-term)", "rCFO (short-term)")
   #m.names <- c("CFO", "aCFO", "CRM", "BOIN")
-  m.names <-   c("fCFO", "f-aCFO", "TITE-CFO", "TITE-aCFO", "TITE-CRM", "TITE-BOIN", "Benchmark aCFO")
+  #m.names <-   c("fCFO", "f-aCFO", "TITE-CFO", "TITE-aCFO", "TITE-CRM", "TITE-BOIN", "Benchmark aCFO")
   g.var <- rep(grp.names, each=length(m.names))
   m.var <- rep(m.names, times=length(p.trues)+1)
   v.var <- unlist(lapply(res.ls, function(x) x[,i]))*100
@@ -61,8 +62,9 @@ for (i in 1:(length(title)-1)){
 
 i <- length(title)
 grp.names <- c(1:length(p.trues), 'avg')
+m.names <-   c("CFO (long-term)", "rCFO (long-term)", "CFO (short-term)", "rCFO (short-term)")
 #m.names <- c("CFO", "aCFO", "CRM", "BOIN")
-m.names <-   c("fCFO", "f-aCFO", "TITE-CFO", "TITE-aCFO", "TITE-CRM", "TITE-BOIN", "Benchmark aCFO")
+#m.names <-   c("fCFO", "f-aCFO", "TITE-CFO", "TITE-aCFO", "TITE-CRM", "TITE-BOIN", "Benchmark aCFO")
 g.var <- rep(grp.names, each=length(m.names))
 m.var <- rep(m.names, times=length(p.trues)+1)
 v.var <- unlist(lapply(res.ls, function(x) x[,i]))
@@ -80,4 +82,6 @@ p <- ggplot(data = data, mapping = aes(x = g, y = v, fill = m)) + geom_bar(stat 
 
 plots_list[[i]] <- p
 
+pdf(file = "use_JCOCCI/SimuLate_7dose_phi_20_fix_bar.pdf", width = 9, height = 6)
 grid.arrange(grobs = plots_list, nrow = 3, ncol = 2)
+dev.off()

@@ -12,10 +12,31 @@ init.level <- 1
 
 add.args <- list(alp.prior=target, bet.prior=1-target)
 
-# mu <- 0.36
-# phi <- 0.33
-# ress <- lapply(1:5000, function(i)gen.rand.doses(5, phi, mu1=mu, mu2=mu))
-# sapply(ress, prob.diff.fn, target=phi) %>% mean
+for (i in 1:10) {
+  mu <- 0.730
+  phi <- 0.3
+  ress <- lapply(1:5000, function(i)gen.rand.doses(6, phi, mu1=mu, mu2=mu))
+  res <-sapply(ress, prob.diff.fn, target=phi) %>% mean
+  print(res)
+}
+
+## Taget = 0.3
+# dose 6, mu1=mu2=0.252, 0.05
+# dose 6, mu1=mu2=0.395, 0.07
+# dose 6, mu1=mu2=0.542, 0.1
+# dose 6, mu1=mu2=0.730, 0.15
+
+## Taget = 0.3
+# dose 8, mu1=mu2=0.28, 0.05
+# dose 8, mu1=mu2=0.422, 0.07
+# dose 8, mu1=mu2=0.566, 0.1
+# dose 8, mu1=mu2=0.752, 0.15
+
+## Taget = 0.2
+# dose 6, mu1=mu2=0.344, 0.05
+# dose 6, mu1=mu2=0.484, 0.07
+# dose 6, mu1=mu2=0.637, 0.1
+# dose 6, mu1=mu2=0.852, 0.15
 
 ## Taget = 0.2
 # dose 7, mu1=mu2=0.36, 0.05
